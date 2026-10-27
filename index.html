@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EECE Alumni Directory · PUST</title>
+<link rel="icon" type="image/svg+xml" href="images/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <p class="uni">Pabna University of Science &amp; Technology · Dept. of EECE</p>
+        <h1>EECE Alumni Directory</h1>
+        <p class="lede">Find batchmates, seniors and juniors. Search by name, workplace, blood group or district.</p>
+      </div>
+<div class="side">
+  <img class="biglogo" src="images/logo.png" alt="PUST EECE logo" width="120" height="120">
+  <div class="stats" aria-live="polite">
+    <div class="stat"><b id="nGrad">–</b><span>Graduates</span></div>
+    <div class="stat"><b id="nStu">–</b><span>Current students</span></div>
+  </div>
+</div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-grad" aria-selected="true" data-t="Graduate">Graduate members</button>
+      <button class="tab" role="tab" id="tab-stu" aria-selected="false" data-t="Current Student">Current students</button>
+      <button class="tab" role="tab" id="tab-dir" aria-selected="false" data-t="Directory">Full list Download</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="filters">
+    <input id="q" type="search" placeholder="Search name, workplace, designation…" aria-label="Search">
+    <select id="fStatus" aria-label="Type" hidden>
+      <option value="">Graduates and students</option>
+      <option value="Graduate">Graduates only</option>
+      <option value="Current Student">Current students only</option>
+    </select>
+    <select id="fBatch" aria-label="Batch"></select>
+    <select id="fBlood" aria-label="Blood group"></select>
+    <select id="fDist" aria-label="District"></select>
+    <button id="reset" type="button">Clear filters</button>
+  </div>
+
+  <div class="bar">
+    <p class="meta" id="meta" role="status"></p>
+    <button id="download" type="button" class="dl" hidden>Download list</button>
+  </div>
+
+  <section class="grid" id="grid" aria-labelledby="tab-grad"></section>
+
+  <section id="tableWrap" class="tablewrap" hidden aria-labelledby="tab-dir">
+    <table id="table"></table>
+  </section>
+</main>
+
+<footer><div class="wrap">Let’s build a powerful alumni community together — reconnect today....</div></footer>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
