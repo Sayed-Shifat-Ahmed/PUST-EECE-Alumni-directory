@@ -1,4 +1,4 @@
-/* UI: tabs, cards, full-list table, sorting, CSV download */
+/* UI: member filters, cards, full-list table, sorting, CSV download */
 let ALL=[], tab="Graduate", sort={key:"batch",dir:1}, selected=new Set();
 const grid=$("#grid"), tableWrap=$("#tableWrap"), table=$("#table");
 const FILTERS=["#q","#fStatus","#fBatch","#fBlood","#fDist"];
@@ -143,7 +143,7 @@ table.addEventListener("change",e=>{          // row + select-all checkboxes
   render();
 });
 
-/* ----- load: one sheet tab per group ----- */
+/* ----- load: one worksheet containing every member ----- */
 function setData(people){
   ALL=people;
   $("#nGrad").textContent=ALL.filter(p=>p.status==="Graduate").length;
@@ -151,58 +151,55 @@ function setData(people){
   buildFilters();render();
 }
 const SHEET=(String(SHEET_ID).match(/\/d\/([\w-]+)/)||[,String(SHEET_ID).trim()])[1];
-
 async function getCSV(url){
-  let res;
-  try{ res=await fetch(url) }
-  catch(e){ throw new Error("request blocked (sheet is not public, the ID is wrong, or there is no internet)") }
+  const res=await fetch(url);
   if(!res.ok) throw new Error("HTTP "+res.status);
   const t=await res.text();
-  if(/^\s*<(!doctype|html)/i.test(t)) throw new Error("Google sent a web page, not data (sheet is not shared publicly)");
+  if(/^\s*<(!doctype|html)/i.test(t)) throw new Error("Google returned a web page instead of CSV data");
   return t;
 }
-/* Fallback that needs no CORS: Google returns the tab as a <script>, which works even from a local file */
 function tableToCSV(t){
   let head=t.cols.map(c=>c.label||""), rows=t.rows.map(r=>(r.c||[]).map(c=>c?(c.f??c.v??""):""));
-  if(!head.some(Boolean)){ head=rows.shift()||[] }   // Google put the header row into the data
+  if(!head.some(Boolean)) head=rows.shift()||[];
   const q=v=>`"${String(v).replace(/"/g,'""')}"`;
   return [head,...rows].map(r=>r.map(q).join(",")).join("\n");
 }
 function scriptTab(base,name){
   return new Promise((resolve,reject)=>{
-    const cb="gviz_"+Math.random().toString(36).slice(2), s=document.createElement("script");
-    const done=()=>{clearTimeout(timer);delete window[cb];s.remove()};
-    const timer=setTimeout(()=>{done();reject(new Error("no answer from Google (sheet is not shared publicly, or the ID is wrong)"))},12000);
+    const cb="gviz_"+Math.random().toString(36).slice(2), script=document.createElement("script");
+    const done=()=>{clearTimeout(timer);delete window[cb];script.remove()};
+    const timer=setTimeout(()=>{done();reject(new Error("No response from Google Sheets"))},12000);
     window[cb]=r=>{done();
       if(r.status!=="ok") return reject(new Error((r.errors&&r.errors[0]&&(r.errors[0].detailed_message||r.errors[0].message))||"Google returned an error"));
-      resolve(tableToCSV(r.table))};
-    s.onerror=()=>{done();reject(new Error("script blocked or sheet not found"))};
-    s.src=`${base}/gviz/tq?tqx=responseHandler:${cb};out:json&headers=1&sheet=${encodeURIComponent(name)}`;
-    document.head.append(s);
+      resolve(tableToCSV(r.table));
+    };
+    script.onerror=()=>{done();reject(new Error("Could not access the Directory worksheet"))};
+    script.src=`${base}/gviz/tq?tqx=responseHandler:${cb};out:json&headers=1&sheet=${encodeURIComponent(name)}`;
+    document.head.append(script);
   });
 }
-async function fetchTab(tab,status){
-  const base=`https://docs.google.com/spreadsheets/d/${SHEET}`, tries=[];
-  if(tab.pub) tries.push(()=>getCSV(tab.pub));
-  tries.push(()=>getCSV(`${base}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(tab.name)}`));
-  tries.push(()=>scriptTab(base,tab.name));
-  if(tab.gid!=="") tries.push(()=>getCSV(`${base}/export?format=csv&gid=${encodeURIComponent(tab.gid)}`));
-  const errs=[];
-  for(const t of tries){
-    try{ return toPeople(await t(),status) }catch(e){ errs.push(e.message); console.warn("Sheet load attempt failed:",e) }
+async function loadDirectory(){
+  const base=`https://docs.google.com/spreadsheets/d/${SHEET}`;
+  const attempts=[];
+  if(DIRECTORY_CSV_URL) attempts.push(()=>getCSV(DIRECTORY_CSV_URL));
+  attempts.push(()=>getCSV(`${base}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(DIRECTORY_SHEET)}`));
+  attempts.push(()=>scriptTab(base,DIRECTORY_SHEET));
+  if(DIRECTORY_GID) attempts.push(()=>getCSV(`${base}/export?format=csv&gid=${encodeURIComponent(DIRECTORY_GID)}`));
+  const errors=[];
+  for(const attempt of attempts){
+    try{
+      const people=toPeople(await attempt(),null);
+      if(!people.length) throw new Error("No member records found. Check the worksheet headers and data.");
+      return people;
+    }catch(e){errors.push(e.message);console.warn("Directory load attempt failed:",e)}
   }
-  throw new Error([...new Set(errs)].join("; "));
+  throw new Error([...new Set(errors)].join("; "));
 }
 (async function(){
-  const samples=()=>[...toPeople(SAMPLE_GRADUATE_CSV,"Graduate"),...toPeople(SAMPLE_CURRENT_CSV,"Current Student")];
-  if(!SHEET){setData(samples());return}
-  const jobs=[[TABS.graduate,"Graduate"],[TABS.current,"Current Student"]];
-  const results=await Promise.allSettled(jobs.map(([t,s])=>fetchTab(t,s)));
-  const bad=jobs.map((j,i)=>[j[0].name,results[i]]).filter(x=>x[1].status==="rejected");
-  setData(bad.length===jobs.length?samples():results.flatMap(r=>r.status==="fulfilled"?r.value:[]));
-  if(bad.length){
-    const why=bad.map(([n,r])=>`<li><b>${esc(n)}:</b> ${esc(r.reason.message)}</li>`).join("");
-    const hint=location.protocol==="file:"?"<p>You opened the page as a local file. Upload it to a host (GitHub Pages, Netlify) or run a local server, then try again.</p>":"";
-    grid.insertAdjacentHTML("afterbegin",`<div class="err"><p>Couldn’t load ${bad.length===jobs.length?"the sheet, so sample data is shown":"part of the sheet"}.</p><ul style="text-align:left;display:inline-block;margin:8px 0">${why}</ul>${hint}<p>Fix: share the sheet as “Anyone with the link – Viewer”, or use File → Share → Publish to web (CSV) and paste the link into <code>TABS</code> in js/config.js.</p></div>`);
+  if(!SHEET){$("#meta").textContent="Configure SHEET_ID in js/config.js to load the directory.";return}
+  try{setData(await loadDirectory())}
+  catch(e){
+    $("#meta").textContent="Could not load the alumni directory.";
+    grid.innerHTML=`<div class="err"><p><b>Unable to load the Directory worksheet.</b></p><p>${esc(e.message)}</p><p>Ensure the spreadsheet is shared as “Anyone with the link – Viewer”, and that the single worksheet is named <code>Directory</code>.</p></div>`;
   }
 })();
