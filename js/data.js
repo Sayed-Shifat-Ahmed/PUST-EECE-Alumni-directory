@@ -33,13 +33,18 @@ function toPeople(csv,forced){
   const pick=(row,key)=>{
     for(let i=0;i<H.length;i++){ if(normHeader(H[i])===key && (row[i]||"").trim()) return row[i].trim() }
     return "" };
+  // flexible match: any header containing the pattern (e.g. "Upload your photo", "Profile picture")
+  const pickLike=(row,re)=>{
+    for(let i=0;i<H.length;i++){ if(re.test(H[i]) && (row[i]||"").trim()) return row[i].trim() }
+    return "" };
   const seen=new Set(), out=[];
   for(const row of rows.slice(1)){
     const status=forced||(pick(row,"current status").toLowerCase().startsWith("current")?"Current Student":"Graduate");
-    const p={status,batch:pick(row,"batch"),name:pick(row,"name"),fb:pick(row,"facebook profile link"),
+    const p={status,batch:pick(row,"university batch")||pick(row,"batch"),name:pick(row,"name"),fb:pick(row,"facebook profile link"),
       phone:pick(row,"contact no."),desig:pick(row,"designation"),work:pick(row,"workplace"),prevWork:pick(row,"previous workplace"),
       email:pick(row,"email"),blood:pick(row,"blood group"),religion:pick(row,"religion"),
-      img:pick(row,"upload image"),present:pick(row,"present address"),perm:pick(row,"permanent address"),
+      img:pick(row,"upload image")||pickLike(row,/image|photo|picture/),
+      present:pick(row,"present address"),perm:pick(row,"permanent address"),
       district:pick(row,"district")};
     if(!p.name) continue;
     p.session=sessionOf(p.batch);
