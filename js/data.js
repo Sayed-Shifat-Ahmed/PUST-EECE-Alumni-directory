@@ -51,7 +51,7 @@ function toPeople(csv,forced){
     const p={status,batch:pick(row,"university batch"),name:pick(row,"name"),fb:pick(row,"facebook profile link"),
       phone:pick(row,"contact no."),desig:pick(row,"designation"),work:pick(row,"workplace"),prevWork:pick(row,"previous workplace"),
       email:pick(row,"email"),blood:pick(row,"blood group"),religion:pick(row,"religion"),
-      img:pick(row,"upload image"),present:pick(row,"present address"),perm:pick(row,"permanent address"),
+      img:pick(row,"upload your photo"),present:pick(row,"present address"),perm:pick(row,"permanent address"),
       district:pickDistrict(row)};
     if(!p.name) continue;
     p.session=sessionOf(p.batch);
