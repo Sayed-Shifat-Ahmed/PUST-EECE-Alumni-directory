@@ -14,12 +14,3 @@ const TABS = {
   graduate: { name:"Graduate", gid:"56948578", pub:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTURgYLGQupu55bDJLVRAqOJYpaceMqy920GzYkhJc4pVaJG_Gne783qYN2VSP1z_KCODVG39eSDSO6/pub?gid=56948578&single=true&output=csv" },
   current:  { name:"Current",  gid:"842300584", pub:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTURgYLGQupu55bDJLVRAqOJYpaceMqy920GzYkhJc4pVaJG_Gne783qYN2VSP1z_KCODVG39eSDSO6/pub?gid=842300584&single=true&output=csv" }
 };
-
-/* Session rule: 9th batch = 2016-17, so start year = 2007 + batch number */
-const SESSION_BASE = 2007;
-
-/* Sample rows shown until SHEET_ID is set or if loading fails (one sample per tab) */
-const SAMPLE_GRADUATE_CSV = `Batch: ,Name:,Facebook Profile Link:,Contact No.:,Designation,Workplace:,Previous Workplace: ,Email:,Blood Group:,Religion:,Upload Image:,Present Address:,Permanent Address:,District:
-1,dsc,,01,as,as,,as@as.com,A-,Islam,https://drive.google.com/open?id=1jsfRkzj9mWCah7H8WVXNyEfnOoGJIC34,sa,sa,Bandarban`;
-const SAMPLE_CURRENT_CSV = `Batch: ,Name:,Facebook Profile Link:,Contact No.:,Email:,Blood Group:,Religion:,Upload Image:,Present Address:,Permanent Address:,District:
-12,qq,,1111,q@s.com,A-,Islam,https://drive.google.com/open?id=1twI0PamOri3vM6spVZwBLyL0B7DLThLd,qqq,qq,Barguna`;
