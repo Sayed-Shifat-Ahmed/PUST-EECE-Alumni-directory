@@ -36,7 +36,7 @@ function toPeople(csv,forced){
   const seen=new Set(), out=[];
   for(const row of rows.slice(1)){
     const status=forced||(pick(row,"current status").toLowerCase().startsWith("current")?"Current Student":"Graduate");
-    const p={status,batch:pick(row,"batch"),name:pick(row,"name"),fb:pick(row,"facebook profile link"),
+    const p={status,batch:pick(row,"University batch"),name:pick(row,"name"),fb:pick(row,"facebook profile link"),
       phone:pick(row,"contact no."),desig:pick(row,"designation"),work:pick(row,"workplace"),prevWork:pick(row,"previous workplace"),
       email:pick(row,"email"),blood:pick(row,"blood group"),religion:pick(row,"religion"),
       img:pick(row,"upload image"),present:pick(row,"present address"),perm:pick(row,"permanent address"),
