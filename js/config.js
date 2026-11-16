@@ -3,7 +3,7 @@
    2. Copy the ID from the sheet URL: docs.google.com/spreadsheets/d/<SHEET_ID>/edit
    3. Paste it below. Tab names must match your sheet tabs exactly.
    ================================================================= */
-const SHEET_ID  = "https://docs.google.com/spreadsheets/d/1zGPkdftoGNohHy_TXLrcc3I2ehRI6pGtBOCvrdFP8YY/edit";
+const SHEET_ID  = "https://docs.google.com/spreadsheets/d/1quReAJg5yTtVBPZh1xSCNcpbDXg6JKv5-odp1Mi5QLY/edit";
 
 /* One entry per sheet tab.
    name : exact tab name (capital letters and spaces matter)
@@ -11,6 +11,6 @@ const SHEET_ID  = "https://docs.google.com/spreadsheets/d/1zGPkdftoGNohHy_TXLrcc
    pub  : optional but the most reliable. File → Share → Publish to web → pick the tab →
           format "CSV" → Publish, then paste the link here. */
 const TABS = {
-  graduate: { name:"Graduate", gid:"56948578", pub:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTURgYLGQupu55bDJLVRAqOJYpaceMqy920GzYkhJc4pVaJG_Gne783qYN2VSP1z_KCODVG39eSDSO6/pub?gid=56948578&single=true&output=csv" },
-  current:  { name:"Current",  gid:"842300584", pub:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTURgYLGQupu55bDJLVRAqOJYpaceMqy920GzYkhJc4pVaJG_Gne783qYN2VSP1z_KCODVG39eSDSO6/pub?gid=842300584&single=true&output=csv" }
+  graduate: { name:"Graduate", gid:"2145305073", pub:"https://docs.google.com/spreadsheets/d/e/2PACX-1vRIHGynjASZJWzBjAgpEemfNlCp_RWHkhVxnj6ROw6hIT9GfvGXS2V3aXBl6-LPTOvkH3tb4oPrgFFh/pub?gid=2145305073&single=true&output=csv" },
+  current:  { name:"Current",  gid:"212727409", pub:"https://docs.google.com/spreadsheets/d/e/2PACX-1vRIHGynjASZJWzBjAgpEemfNlCp_RWHkhVxnj6ROw6hIT9GfvGXS2V3aXBl6-LPTOvkH3tb4oPrgFFh/pub?gid=212727409&single=true&output=csv" }
 };
