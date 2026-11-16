@@ -31,8 +31,20 @@ function toPeople(csv,forced){
   }
   // the form has one set of columns for graduates and one for students: take the first non-empty
   const pick=(row,key)=>{
-    for(let i=0;i<H.length;i++){ if(normHeader(H[i])===key && (row[i]||"").trim()) return row[i].trim() }
-    return "" };
+    for(let i=0;i<H.length;i++){
+      if(normHeader(H[i])===key && (row[i]||"").trim()) return row[i].trim();
+    }
+    return "";
+  };
+  // Accept common spreadsheet variants for the home-district column.
+  const pickDistrict=row=>{
+    const aliases=["district","home district","home district name","district name","permanent district"];
+    for(const alias of aliases){
+      const value=pick(row,alias);
+      if(value) return value;
+    }
+    return "";
+  };
   const seen=new Set(), out=[];
   for(const row of rows.slice(1)){
     const status=forced||(pick(row,"current status").toLowerCase().startsWith("current")?"Current Student":"Graduate");
@@ -40,7 +52,7 @@ function toPeople(csv,forced){
       phone:pick(row,"contact no."),desig:pick(row,"designation"),work:pick(row,"workplace"),prevWork:pick(row,"previous workplace"),
       email:pick(row,"email"),blood:pick(row,"blood group"),religion:pick(row,"religion"),
       img:pick(row,"upload image"),present:pick(row,"present address"),perm:pick(row,"permanent address"),
-      district:pick(row,"district")};
+      district:pickDistrict(row)};
     if(!p.name) continue;
     p.session=sessionOf(p.batch);
     const k=[p.status,p.name,p.phone,p.email].join("|").toLowerCase();

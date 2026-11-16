@@ -95,7 +95,7 @@ footer{background:var(--ink);color:#b9c6d8;font-size:.88rem;padding:10px 0}
   .hero{grid-template-columns:1fr}.stats{justify-content:flex-start}.side{align-items:flex-start}
 }
 @media(max-width:480px){
-  .pcard{grid-template-columns:1fr}.pic{flex-direction:row;border-right:0;border-bottom:1px solid var(--line)}
+  .pcard{grid-template-columns:1fr}.pic{flex-direction:column;align-items:center;gap:8px;border-right:0;border-bottom:1px solid var(--line)}
   .panel{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:no-preference){
